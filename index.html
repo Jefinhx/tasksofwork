@@ -1,342 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Estilos gerais */
-        body {
-            background-color: #000;
-            color: #fff;
-        }
-
-        /* Estilos para as diferentes seções na parte superior */
-        .top-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 10px;
-        }
-
-        /* Estilo para o relógio */
-        #clock {
-            font-size: 20px;
-            margin-right: 20px;
-        }
-
-        /* Estilos para o container e cabeçalho */
-        .container {
-            max-width: 95%;
-            padding: 0;
-            margin: 5;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        /* Estilos para campos de entrada */
-        .input-group {
-            display: flex; /* Alinha os inputs em linha */
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        #userInput {
-            padding: 5px;
-            margin-right: 10px;
-        }
-
-        /* Estilos para os campos de entrada de tarefas e categorias */
-        #task, #category {
-            margin-right: 10px;
-            border-radius: 0;
-        }
-
-        /* Estilo para o botão Salvar */
-        #saveBtn {
-            border-radius: 0;
-            padding: 7px 15px; /* Alargue o botão */
-        }
-
-        /* Estilo para tarefa concluída */
-        .completed {
-            text-decoration: line-through;
-            color: black;
-        }
-
-        /* Estilo para os ícones de edição e exclusão */
-        .deleteTask, .editTask {
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        /* Estilo para a tabela de tarefas */
-        th, td {
-            text-align: center; /* Alinha o conteúdo centralizado */
-        }
-
-        #messageDiv {
-        text-align: center; 
-        margin: 10px auto; 
-        width: fit-content; 
-        padding: 5px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <div class="container mt-5">
-        <!-- Seção superior com relógio, título e clima -->
         <div class="top-section">
             <div id="weather"></div>
             <h1>Gerenciador de Tarefas</h1>
             <div id="clock"></div>
         </div>
-
-        <!-- Grupo de inputs e botão em uma linha -->
         <div class="input-group">
             <input type="text" class="form-control" id="userInput" style="border-radius: 0;" placeholder="Nome do usuário">
             <input type="text" class="form-control" id="task" placeholder="Digite uma tarefa">
             <input type="text" class="form-control" id="category" placeholder="Digite uma categoria">
+            <input type="text" class="form-control" id="city" placeholder="Digite a cidade">
+            <input type="date" class="form-control" id="date" placeholder="Digite a data">
             <button id="saveBtn" class="btn btn-success">Salvar</button>
         </div>
-
-        <!-- Tabela para tarefas -->
         <table class="table">
             <thead>
                 <tr>
                     <th>Usuário</th>
                     <th>Tarefa</th>
                     <th>Categoria</th>
+                    <th>Cidade</th>
                     <th>Data</th>
+                    <th>Data Cadastro</th>
                     <th>Concluída</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="tasksTable">
-                <!-- As tarefas serão carregadas aqui -->
             </tbody>
         </table>
-        <!-- Elemento para exibir mensagens -->
         <div id="messageDiv"></div>
     </div>
 
-    <!-- Importando jQuery e Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Chave de API da OpenWeather
-        const apiKey = '22e966f689b50d30020f27ef9d990ccd';
-
-        // Código para atualizar o relógio em tempo real
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
-        }
-
-        // Chama a função de atualização de relógio a cada segundo
-        setInterval(updateClock, 1000);
-
-        // Função para carregar o clima de Muriaé
-        async function loadWeather() {
-            const city = 'Muriaé';
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`;
-
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                // Se a requisição for bem-sucedida, atualize o clima na página
-                if (data.cod === 200) {
-                    const temperature = data.main.temp;
-                    const weatherDescription = data.weather[0].description;
-                    const weatherIcon = data.weather[0].icon;
-                    const iconUrl = `http://openweathermap.org/img/wn/${weatherIcon}@2x.png`;
-
-                    // Atualiza o elemento de clima com a temperatura, descrição e ícone
-                    const weatherElement = document.getElementById('weather');
-                    weatherElement.innerHTML = `
-                        <img src="${iconUrl}" alt="Ícone do clima" style="width: 50px; height: 50px;">
-                        <span>${temperature.toFixed(1)}°C - ${weatherDescription}</span>
-                    `;
-                } else {
-                    console.error('Erro ao carregar os dados de clima:', data.message);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar os dados de clima:', error);
-            }
-        }
-
-        // Chama a função para carregar o clima de Muriaé ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            loadWeather();
-        });
-
-        // Código para gerenciar as tarefas
-        $(document).ready(function () {
-            loadTasks();
-
-            $('#saveBtn').click(function () {
-                const user = $('#userInput').val();
-                const taskInput = $('#task').val();
-                const categoryInput = $('#category').val();
-                const createdDate = getFormattedDateTime();
-                const existingTaskIndex = $('#saveBtn').data('editIndex');
-
-                // Verificar se todos os campos estão preenchidos
-                if (!user || !taskInput || !categoryInput) {
-                    showMessage('Por favor, preencha todos os campos', 'danger');
-                    return; // Não continue se faltarem campos
-                }
-
-                // Verificar se a tarefa já foi incluída
-                const tasks = loadTasksFromLocalStorage();
-                const isDuplicate = tasks.some(task => 
-                    task.task === taskInput && task.category === categoryInput
-                );
-
-                if (isDuplicate) {
-                    showMessage('Tarefa já inclusa', 'danger');
-                    return; // Não continue se a tarefa já existe
-                }
-
-                if (existingTaskIndex !== undefined) {
-                    tasks[existingTaskIndex].user = user;
-                    tasks[existingTaskIndex].task = taskInput;
-                    tasks[existingTaskIndex].category = categoryInput;
-                    saveTasksToLocalStorage(tasks);
-                    $('#saveBtn').data('editIndex', undefined).text('Salvar');
-                    showMessage('Tarefa editada com sucesso', 'success');
-                } else {
-                    const newTask = {
-                        user,
-                        task: taskInput,
-                        category: categoryInput,
-                        createdDate,
-                        completed: false
-                    };
-                    addNewTask(newTask);
-                    showMessage('Tarefa salva com sucesso', 'success');
-                }
-
-                $('#userInput').val('');
-                $('#task').val('');
-                $('#category').val('');
-                loadTasks();
-            });
-
-            function addNewTask(task) {
-                const tasks = loadTasksFromLocalStorage();
-                tasks.unshift(task);
-                saveTasksToLocalStorage(tasks);
-            }
-
-            $(document).on('change', '.completedCheckbox', function () {
-                const rowIndex = $(this).closest('tr').index();
-                const tasks = loadTasksFromLocalStorage();
-                tasks[rowIndex].completed = $(this).is(':checked');
-                saveTasksToLocalStorage(tasks);
-
-                if (tasks[rowIndex].completed) {
-                    $(this).closest('tr').addClass('completed');
-                } else {
-                    $(this).closest('tr').removeClass('completed');
-                }
-            });
-
-            $(document).on('click', '.deleteTask', function () {
-                const rowIndex = $(this).closest('tr').index();
-                const tasks = loadTasksFromLocalStorage();
-                tasks.splice(rowIndex, 1);
-                saveTasksToLocalStorage(tasks);
-                loadTasks();
-            });
-
-            $(document).on('click', '.editTask', function () {
-                const rowIndex = $(this).closest('tr').index();
-                const tasks = loadTasksFromLocalStorage();
-                const taskToEdit = tasks[rowIndex];
-
-                $('#userInput').val(taskToEdit.user);
-                $('#task').val(taskToEdit.task);
-                $('#category').val(taskToEdit.category);
-                $('#saveBtn').text('Editar').data('editIndex', rowIndex);
-            });
-
-            function loadTasks() {
-                const tasks = loadTasksFromLocalStorage();
-                const tasksTable = $('#tasksTable');
-                tasksTable.empty();
-
-                tasks.forEach((task, index) => {
-                    const row = $('<tr>');
-                    row.append(`<td>${task.user}</td>`);
-                    row.append(`<td>${task.task}</td>`);
-                    row.append(`<td>${task.category}</td>`);
-                    row.append(`<td>${task.createdDate}</td>`);
-                    const completedCheckbox = $('<input type="checkbox" class="completedCheckbox">');
-                    completedCheckbox.prop('checked', task.completed);
-                    row.append($('<td>').append(completedCheckbox));
-                    row.append(`
-                        <td>
-                            <i class="fas fa-edit editTask"></i>
-                            <i class="fas fa-trash deleteTask"></i>
-                        </td>
-                    `);
-
-                    if (task.completed) {
-                        row.addClass('completed');
-                    }
-
-                    tasksTable.append(row);
-                });
-            }
-
-            function loadTasksFromLocalStorage() {
-                const tasks = localStorage.getItem('tasks');
-                return tasks ? JSON.parse(tasks) : [];
-            }
-
-            function saveTasksToLocalStorage(tasks) {
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-            }
-
-            function getFormattedDateTime() {
-                const now = new Date();
-                const day = String(now.getDate()).padStart(2, '0');
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const year = now.getFullYear();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                return `${day}/${month}/${year} ${hours}:${minutes}`;
-            }
-
-            // Função para exibir mensagens
-            function showMessage(message, type = 'success') {
-                const messageDiv = document.getElementById('messageDiv');
-                messageDiv.textContent = message;
-                messageDiv.className = type === 'success' ? 'alert alert-success' : 'alert alert-danger';
-
-                // Remove a mensagem após alguns segundos
-                setTimeout(() => {
-                    messageDiv.textContent = '';
-                    messageDiv.className = '';
-                }, 3000);
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
