@@ -1,0 +1,99 @@
+/* Estilos gerais */
+body {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Estilos para as diferentes seções na parte superior */
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+/* Estilo para o relógio */
+#clock {
+    font-size: 20px;
+    margin-right: 20px;
+}
+
+/* Estilos para o container e cabeçalho */
+.container {
+    max-width: 95%;
+    padding: 0;
+    margin: 5;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Estilos para campos de entrada */
+.input-group {
+    display: flex; /* Alinha os inputs em linha */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#userInput {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+/* Estilos para os campos de entrada de tarefas e categorias */
+#task, #category, #date, #city {
+    margin-right: 10px;
+    border-radius: 0;
+}
+
+/* Estilo para o botão Salvar */
+#saveBtn {
+    border-radius: 0;
+    padding: 7px 15px; /* Alargue o botão */
+}
+
+/* Estilo para tarefa concluída */
+.completed {
+    text-decoration: line-through;
+    color: black;
+}
+
+/* Estilo para os ícones de edição e exclusão */
+.deleteTask, .editTask {
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+/* Estilo para a tabela de tarefas */
+th, td {
+    text-align: center; /* Alinha o conteúdo centralizado */
+}
+
+#messageDiv {
+    text-align: center; 
+    margin: 10px auto; 
+    width: fit-content; 
+    padding: 5px;
+}
+
+.icon-rain {
+    color: #3498db; /* Azul para chuva */
+}
+
+.icon-sun {
+    color: yellow; /* Amarelo para sol */
+}
+
+.icon-cloud {
+    color: blue; /* Cinza para nublado */
+}
+
+.icon-smog {
+    color: #7f8c8d; /* Cinza escuro para smog */
+}
+
+#weather span {
+    color: white;
+}
